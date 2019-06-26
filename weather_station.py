@@ -54,7 +54,7 @@ def stop_event(channel):
 
 # sends data to text file that can be imported to Excel/LibreOffice
 def to_file():
-    file f
+    print('sent to file')
 
 # Define system variables
 freq = 2    # 2 seconds
