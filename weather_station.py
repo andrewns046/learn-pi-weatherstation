@@ -79,9 +79,10 @@ while not shutdown.is_set():
     # At this point 2 seconds have passed
     if not humid == None and not temp == None: # run if data recieved
 
-        if(reset.is_set()):  # clear data and reset time
+        if not reset.is_set():  # clear data and reset time
             del data_buf[:]
             time_elap = 0
+            reset.clear() # reset internal flag to false
 
     # PROCESS and RECORD data
         row = str(time_elap) + '\t' + str(temp) + '\t' + str(humid)
@@ -110,7 +111,7 @@ GPIO.output(reset_led, GPIO.LOW)
 filename = "sanchez,andrew" + str(datetime.datetime.now()) + ".txt"
 file = open(filename , "w")
 file.write('Time(Seconds)\tTemperature(C)\tHumidity(%)\n') # write header
-for row in range(len(data_buf)):
+for row in range(len(data_buf)): # write data in buffer
     file.write(data_buf[row] + '\n')
 print("Sent to File:\t" + filename)
 file.close()
