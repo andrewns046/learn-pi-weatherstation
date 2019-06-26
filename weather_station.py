@@ -9,6 +9,7 @@ text file that can be imported to Excel/LibreOffice.
 '''
 import sys
 import Adafruit_DHT
+import datetime
 from threading import Event
 import RPi.GPIO as GPIO
 
@@ -28,7 +29,7 @@ data_pin = 21
 shutdown = Event()
 
 # Define system variables
-freq = 1.8    #2 seconds
+freq = 2    #2 seconds
 time_elap = 0
 data_buf = []
 
@@ -59,16 +60,11 @@ def stop_event(channel):
     GPIO.output(stop_led, GPIO.HIGH)
     global shutdown
     shutdown.set() #trigger event shutdown
-    print('Halting system ...\nLast value recorded will be printed but not added to data:')
+    print('Halting system ...\nLast Value Recorded:\t')
 
 #attach interrupts to buttons
 GPIO.add_event_detect(reset_btn, GPIO.FALLING, callback=reset_event)
 GPIO.add_event_detect(stop_btn, GPIO.FALLING, callback=stop_event)
-
-
-# sends data to text file that can be imported to Excel/LibreOffice
-def to_file():
-    print('sent to file')
 
 # initialize LEDs
 GPIO.output(heat_led, GPIO.LOW)
@@ -102,6 +98,14 @@ while not shutdown.is_set():
 GPIO.output(heat_led, GPIO.LOW)
 GPIO.output(less23_led, GPIO.LOW)
 GPIO.output(reset_led, GPIO.LOW)
-# send data to formatted text file
-to_file()
+
+# *** EDIT HERE *** send data to formatted text file
+# FORMAT STUDENT NAME "lastname,firstname"
+filename = "sanchez,andrew" + str(datetime.datetime.now()) + ".txt"
+file = open(filename , "w")
+file.write('Time(Seconds)\tTemperature(C)\tHumidity(%)\n') # write header
+for row in range(len(data_buf)):
+    file.write(data_buf[row] + '\n')
+print("Sent to File:\t" + filename)
+file.close()
 GPIO.cleanup() # end program
