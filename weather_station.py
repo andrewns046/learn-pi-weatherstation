@@ -25,12 +25,14 @@ reset_btn = 26
 stop_btn = 19
 data_pin = 21
 
-# Setup shutdown event
+# Setup events
 shutdown = Event()
+reset = Event()
 
 # Define system variables
-freq = 2    #2 seconds
+period = 2    # 2 seconds
 time_elap = 0
+temp_limit = 23 # DEFAULT temp limit room temperature 23 C
 data_buf = []
 
 # Raspberry Pi Setup
@@ -48,19 +50,15 @@ GPIO.setup(stop_btn, GPIO.IN)
 # Reset button has been pressed reinitialize data and reset time_elap
 def reset_event(channel):
     GPIO.output(reset_led, GPIO.HIGH)
-    global data_buf
-    global time_elap
-    time_elap = -2
-    del data_buf[:]
-    print 'Resetting system ... \t' +  str(data_buf)
+    global reset
+    reset.set() # trigger reset event
     GPIO.output(reset_led, GPIO.LOW)
 
 # Stop button has been pressed stop main loop
 def stop_event(channel):
     GPIO.output(stop_led, GPIO.HIGH)
     global shutdown
-    shutdown.set() #trigger event shutdown
-    print('Halting system ...\nLast Value Recorded:\t')
+    shutdown.set() # trigger shutdown event
 
 #attach interrupts to buttons
 GPIO.add_event_detect(reset_btn, GPIO.FALLING, callback=reset_event)
@@ -75,32 +73,40 @@ GPIO.output(stop_led, GPIO.LOW)
 print('Time(Seconds)\tTemperature(C)\tHumidity(%)')
 # Main loop
 while not shutdown.is_set():
-    # AQUIRE Data
-    # Returns values every 2 seconds due to .5Hz temp sensor
-    humid, temp = Adafruit_DHT.read_retry(sensor, data_pin)
+    # AQUIRE data at a frequency of .5Hz
+    humid, temp = Adafruit_DHT.read_retry(sensor, data_pin, 1)
+
+    # At this point 2 seconds have passed
+    if not humid == None and not temp == None: # run if data recieved
+
+        if(reset.is_set()):  # clear data and reset time
+            del data_buf[:]
+            time_elap = 0
 
     # PROCESS and RECORD data
-    row = str(time_elap) + '\t' + str(temp) + '\t' + str(humid)
-    data_buf.append(row)
-    time_elap += freq
+        row = str(time_elap) + '\t' + str(temp) + '\t' + str(humid)
+        data_buf.append(row)
 
-    #DISPLAY data
-    print(row)
-    # Change LED states
-    if temp > 23:
-        GPIO.output(heat_led, GPIO.HIGH)
-        GPIO.output(less23_led, GPIO.LOW)
-    else:
-        GPIO.output(heat_led, GPIO.LOW)
-        GPIO.output(less23_led, GPIO.HIGH)
+    # DISPLAY data and change LED Indicators
+        print(row)
+        if temp > temp_limit:
+            GPIO.output(heat_led, GPIO.HIGH)
+            GPIO.output(less23_led, GPIO.LOW)
+        else:
+            GPIO.output(heat_led, GPIO.LOW)
+            GPIO.output(less23_led, GPIO.HIGH)
+
+    time_elap += period # increment time
 
 # initialize shutdown sequence
+print('Halting system ...\nLast Value Recorded:\t')
 GPIO.output(heat_led, GPIO.LOW)
 GPIO.output(less23_led, GPIO.LOW)
 GPIO.output(reset_led, GPIO.LOW)
 
-# *** EDIT HERE *** send data to formatted text file
-# FORMAT STUDENT NAME "lastname,firstname"
+# Prepare .txt file to be imported into excel
+# *** STUDENTS EDIT HERE *** to send data to formatted text file
+# replace string with your "lastname,firstname" below.
 filename = "sanchez,andrew" + str(datetime.datetime.now()) + ".txt"
 file = open(filename , "w")
 file.write('Time(Seconds)\tTemperature(C)\tHumidity(%)\n') # write header
@@ -108,4 +114,5 @@ for row in range(len(data_buf)):
     file.write(data_buf[row] + '\n')
 print("Sent to File:\t" + filename)
 file.close()
+
 GPIO.cleanup() # end program
