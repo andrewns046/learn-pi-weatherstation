@@ -11,6 +11,8 @@ import sys
 import Adafruit_DHT
 import datetime
 from threading import Event
+from threading import Thread
+import time
 import RPi.GPIO as GPIO
 
 # Initialize DHT11 sensor
@@ -30,10 +32,13 @@ shutdown = Event()
 reset = Event()
 
 # Define system variables
-period = 2    # 2 seconds
+period = 2   # delay seconds for sensor
+sens_r = 15   # sensor retries
 time_elap = 0
 temp_limit = 23 # DEFAULT temp limit room temperature 23 C
 data_buf = []
+humid = 0.0
+temp = 0.0
 
 # Raspberry Pi Setup
 GPIO.setmode(GPIO.BCM)
@@ -52,13 +57,17 @@ def reset_event(channel):
     GPIO.output(reset_led, GPIO.HIGH)
     global reset
     reset.set() # trigger reset event
-    GPIO.output(reset_led, GPIO.LOW)
 
 # Stop button has been pressed stop main loop
 def stop_event(channel):
     GPIO.output(stop_led, GPIO.HIGH)
     global shutdown
     shutdown.set() # trigger shutdown event
+
+def take_measurement():
+    global humid
+    global temp
+    humid, temp = Adafruit_DHT.read_retry(sensor, data_pin, sens_r, period)
 
 #attach interrupts to buttons
 GPIO.add_event_detect(reset_btn, GPIO.FALLING, callback=reset_event)
@@ -71,18 +80,28 @@ GPIO.output(reset_led, GPIO.LOW)
 GPIO.output(stop_led, GPIO.LOW)
 
 print('Time(Seconds)\tTemperature(C)\tHumidity(%)')
+
 # Main loop
 while not shutdown.is_set():
     # AQUIRE data at a frequency of .5Hz
-    humid, temp = Adafruit_DHT.read_retry(sensor, data_pin, 1)
+    #humid, temp = Adafruit_DHT.read_retry(sensor, data_pin, sens_r, period)
 
-    # At this point 2 seconds have passed
+    measure_t = Thread(target=take_measurement)
+    measure_t.start()
+    print('|', end='')
+    while measure_t.is_alive():
+        print('|', end='', flush=True)
+        time.sleep(1)
+    print('|')
+    time_elap += (sens_r*period) # increment time
+
     if not humid == None and not temp == None: # run if data recieved
 
-        if not reset.is_set():  # clear data and reset time
+        if reset.is_set():  # clear data and reset time
             del data_buf[:]
             time_elap = 0
             reset.clear() # reset internal flag to false
+            GPIO.output(reset_led, GPIO.LOW)
 
     # PROCESS and RECORD data
         row = str(time_elap) + '\t' + str(temp) + '\t' + str(humid)
@@ -96,8 +115,8 @@ while not shutdown.is_set():
         else:
             GPIO.output(heat_led, GPIO.LOW)
             GPIO.output(less23_led, GPIO.HIGH)
-
-    time_elap += period # increment time
+    else:
+        print('Sensor missed data for\t t = %d' % (time_elap))
 
 # initialize shutdown sequence
 print('Halting system ...\nLast Value Recorded:\t')
