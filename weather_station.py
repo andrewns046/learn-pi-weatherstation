@@ -104,11 +104,11 @@ while not shutdown.is_set():
             GPIO.output(reset_led, GPIO.LOW)
 
     # PROCESS and RECORD data
-        row = str(time_elap) + '\t' + str(temp) + '\t' + str(humid)
+        row = str(time_elap) + ', ' + str(temp) + ', ' + str(humid)
         data_buf.append(row)
 
     # DISPLAY data and change LED Indicators
-        print(row)
+        print('%4.2fs,\t%4.2f*C,\t%4.2f %' % (time_elap, temp, humid))
         if temp > temp_limit:
             GPIO.output(heat_led, GPIO.HIGH)
             GPIO.output(less23_led, GPIO.LOW)
@@ -127,9 +127,9 @@ GPIO.output(reset_led, GPIO.LOW)
 # Prepare .txt file to be imported into excel
 # *** STUDENTS EDIT HERE *** to send data to formatted text file
 # replace string with your "lastname,firstname" below.
-filename = "sanchez,andrew" + str(datetime.datetime.now()) + ".txt"
+filename = "sanchez,andrew" + str(datetime.datetime.now()) + ".csv"
 file = open(filename , "w")
-file.write('Time(Seconds)\tTemperature(C)\tHumidity(%)\n') # write header
+file.write('Time(Seconds), Temperature(C), Humidity(%)\n') # write header
 for row in range(len(data_buf)): # write data in buffer
     file.write(data_buf[row] + '\n')
 print("Sent to File:\t" + filename)
