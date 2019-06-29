@@ -11,10 +11,10 @@ Part List:
 - Raspberry Pi
 
 ### Wiring Diagram
-TODO
+![alt text](https://raw.githubusercontent.com/tonikhd/learn-pi-weatherstation/master/wswiringdiagram_bb.png)
 
 ### Example output
-TODO
+TODO: Will be filled in Monday July 1, 2019
 
 ### System State Diagram/Flowchart
 The diagram below demonstrates the logic of our system and the processes that
@@ -27,7 +27,6 @@ Installing libraries with Python 3 and pip:
 sudo apt-get update
 sudo apt-get install python3-pip
 sudo python3 -m pip install --upgrade pip setuptools wheel
-
 sudo pip3 install Adafruit_DHT
 ```
 Clone this repository into your working directory:
@@ -41,12 +40,16 @@ Before you run:
 
 Once everything is installed locate the weatherstation.py script by looking at
 the contents of your directory:
-`ls -l`
-
-Open the script and located the section labeled **STUDENT EDIT HERE*** towards
+```
+ls -l
+```
+Open the script and located the section labeled **STUDENTS EDIT HERE** towards
 the bottom of the script. Make sure to follow the instructions and save the file
 by hitting CtrlX -> type[y] -> press [enter]:
-`sudo nano weatherstation.py`
-
+```
+sudo nano weatherstation.py
+```
 Run the program with:
-`sudo python3 weatherstation.py`
+```
+sudo python3 weatherstation.py
+```
