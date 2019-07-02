@@ -87,13 +87,15 @@ while not shutdown.is_set():
     #humid, temp = Adafruit_DHT.read_retry(sensor, data_pin, sens_r, period)
 
     measure_t = Thread(target=take_measurement)
+    counter = 0
     measure_t.start()
     print('|', end='')
     while measure_t.is_alive():
         print('|', end='', flush=True)
+        counter += 1
         time.sleep(1)
     print('|')
-    time_elap += (sens_r*period) # increment time
+    time_elap += (counter) # increment time
 
     if not humid == None and not temp == None: # run if data recieved
 
@@ -108,7 +110,7 @@ while not shutdown.is_set():
         data_buf.append(row)
 
     # DISPLAY data and change LED Indicators
-        print('%4.2fs,\t%4.2f*C,\t%4.2f %' % (time_elap, temp, humid))
+        print('%4.2f seconds,\t %4.2f *Celsius,\t %4.2f percent' % (time_elap, temp, humid))
         if temp > temp_limit:
             GPIO.output(heat_led, GPIO.HIGH)
             GPIO.output(less23_led, GPIO.LOW)
@@ -116,7 +118,7 @@ while not shutdown.is_set():
             GPIO.output(heat_led, GPIO.LOW)
             GPIO.output(less23_led, GPIO.HIGH)
     else:
-        print('Sensor missed data for\t t = %d' % (time_elap))
+        print('Sensor missed data for\t t = %4.2f seconds' % (time_elap))
 
 # initialize shutdown sequence
 print('Halting system ...\nLast Value Recorded:\t')
@@ -124,7 +126,7 @@ GPIO.output(heat_led, GPIO.LOW)
 GPIO.output(less23_led, GPIO.LOW)
 GPIO.output(reset_led, GPIO.LOW)
 
-# Prepare .txt file to be imported into excel
+# Prepare .csv file to be imported into excel
 # *** STUDENTS EDIT HERE *** to send data to formatted text file
 # replace string with your "lastname,firstname" below.
 filename = "sanchez,andrew" + str(datetime.datetime.now()) + ".csv"
