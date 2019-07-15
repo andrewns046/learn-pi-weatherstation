@@ -10,9 +10,9 @@ class MarbleTrack():
     def __init__(self, pin_list):
         GPIO.setmode(GPIO.BCM)
     
-        self.pg_list = pin_list  # photogate list
+        self.photo_gates = pin_list  # photogate list
         self.time_buf = []  # list to hold times
-        self.num_gates = pin_list.len() # number of gates on Marble Track
+        self.num_gates = len(pin_list) # number of gates on Marble Track
         self.edge_count = 0
         self.exp_count = 0
         
@@ -47,7 +47,7 @@ class MarbleTrack():
         elap_times = []    # list of string formatted times
         for times in self.time_buf:
             # find the elapsed time
-            elap = times - time_buf[0]  # elap_time = end_time - start_time
+            elap = times - self.time_buf[0]  # elap_time = end_time - start_time
             
             # formatting universal time into human readable time
             elap_times.append(time.strftime("%H:%M:%S:%f", time.gmtime(elap)))
