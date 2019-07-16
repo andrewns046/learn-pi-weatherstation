@@ -14,7 +14,7 @@ class MarbleTrack():
         self.time_buf = []  # list to hold times
         self.num_gates = len(pin_list) # number of gates on Marble Track
         self.edge_count = 0
-        self.exp_count = 0
+        self.exp_count = 1
         
         # setup all photo gates
         for gate in self.photo_gates:
@@ -38,8 +38,8 @@ class MarbleTrack():
         start_time = 0
         
         print('Marble Track Ready !\n\n')
-        
-        while self.edge_count is not self.num_gates:pass # wait marble to go through track
+        print('Timeout in 4 seconds ...')
+        time.sleep(4)  # wait marble to go through track
         
         print('Experiment %d Success!' % self.exp_count)
         
@@ -57,10 +57,10 @@ class MarbleTrack():
         print('##     TIME     ##')
         print('##    RESULTS   ##')
         print('##################')
-        for x in range(0, self.num_gates,1):
-            print('PHOTO GATES # %d \t %s' % (x, elap_times[x]))
+        for x in range(0,len(elap_times),1):
+            print('TIME # %d \t %s' % (x, elap_times[x]))
         
-        # TODO write expirement to file
+        # TODO write experiment to file
          
     
     # define a shutdown process
