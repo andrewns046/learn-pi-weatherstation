@@ -37,9 +37,9 @@ class MarbleTrack():
         del self.time_buf[:]
         start_time = 0
         
-        print('Marble Track Ready !\n\n')
-        print('Timeout in 4 seconds ...')
-        time.sleep(4)  # wait marble to go through track
+        print('Marble Track Ready, drop a marble !\n\n')
+        print('You have 6 seconds GO!!!...')
+        time.sleep(6)  # wait marble to go through track
         
         print('Experiment %d Success!' % self.exp_count)
         
@@ -50,7 +50,7 @@ class MarbleTrack():
             elap = times - self.time_buf[0]  # elap_time = end_time - start_time
             
             # formatting universal time into human readable time
-            elap_times.append(time.strftime("%H:%M:%S:%f", time.gmtime(elap)))
+            elap_times.append(int(round(elap * 1000)))
      
         # print results to user
         print('##################')
@@ -58,10 +58,10 @@ class MarbleTrack():
         print('##    RESULTS   ##')
         print('##################')
         for x in range(0,len(elap_times),1):
-            print('TIME # %d \t %s' % (x, elap_times[x]))
+            print('TIME # %d \t %s' % (x, str(elap_times[x])))
         
         # TODO write experiment to file
-         
+        self.exp_count += 1 
     
     # define a shutdown process
     def shutdown(self):
