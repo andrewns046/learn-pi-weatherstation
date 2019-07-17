@@ -24,6 +24,7 @@ class MarbleTrack():
         self.photo_gate_pins = pin_list  # photogate list
         self.photo_gate_distances = dist_list # distances in cm
         self.exp_count = 1
+        self.filename = "mt_sanchez,andrew" + str(datetime.datetime.now()) + ".csv"
 
         print('Marble Track Prepping ...')
 
@@ -130,12 +131,13 @@ class MarbleTrack():
         # Prepare .csv file to be imported into excel
         # *** STUDENTS EDIT HERE *** to send data to formatted text file
         # replace string with your "lastname,firstname" below.
-        filename = "sanchez,andrew" + str(datetime.datetime.now()) + ".csv"
-        file = open(filename , "w")
-        file.write('RUN,GATE #, TIME(MILIS)\n') # write header
+        
+        file = open(self.filename , "w")
+        file.write('RUN,GATE#,TIME(MILIS),DISTANCE(CM)\n') # write header
         for row in range(len(data_buf)): # write data in buffer
             file.write(data_buf[row] + '\n')
-        print("Sent to File:\t" + filename)
+        file.write('\n') # seperate data
+        print("Wrote to file:\t" + filename)
         file.close()
 
 
