@@ -18,7 +18,7 @@ class MarbleTrack():
         if((len(pin_list) is not self.num_pins) or (len(dist_list) is not self.num_pins)):
             print('Too few pins or distances were entered')
             print('Fix error and try again')
-        
+
         GPIO.setmode(GPIO.BCM)
         self.photo_gate_pins = pin_list  # photogate list
         self.photo_gate_distances = dist_list # distances in cm
@@ -77,6 +77,15 @@ class MarbleTrack():
         self.g6_time_buf.append(time.time()) # record time
         print('PHOTOGATE # 6 Yeet !')
 
+    # format a for row
+    def __f_row__(self, gate_num, time_buf):
+        row = ""
+        for x in time_buf:
+            elap_time = x - self.g1_time_buf[0]
+            row = str(self.exp_count) + "," + gate_num + ',' + str(int(round(elap_time*1000)))
+            print(str(self.exp_count) + "\t" + gate_num + '\t' + str(int(round(elap_time*1000))))
+        return row
+
     # experiment
     def start_exp(self):
         # clear gate time buffers
@@ -96,25 +105,38 @@ class MarbleTrack():
 
         print('Experiment %d Success!' % self.exp_count)
 
-        # extract times from buffer
-        elap_times = []    # list of string formatted times
-        for times in self.time_buf:
-            # find the elapsed time
-            elap = times - self.time_buf[0]  # elap_time = end_time - start_time
-
-            # formatting universal time into human readable time
-            elap_times.append(int(round(elap * 1000)))
-
         # print results to user
         print('##################')
         print('##     TIME     ##')
         print('##    RESULTS   ##')
         print('##################')
-        for x in range(0,len(elap_times),1):
-            print('TIME # %d \t %s' % (x, str(elap_times[x])))
+
+        print('\n\n\nRUN\tGATE #\tTIME(MILIS)')
+
+        # prep data
+        data_buf = []
+        data_buf.append( self.__f_row__(1,self.g1_time_buf) )
+        data_buf.append( self.__f_row__(2,self.g2_time_buf) )
+        data_buf.append( self.__f_row__(3,self.g3_time_buf) )
+        data_buf.append( self.__f_row__(4,self.g4_time_buf) )
+        data_buf.append( self.__f_row__(5,self.g5_time_buf) )
+        data_buf.append( self.__f_row__(6,self.g6_time_buf) )
+
+        # increment experiment
+        self.exp_count += 1
 
         # TODO write experiment to file
-        self.exp_count += 1
+        # Prepare .csv file to be imported into excel
+        # *** STUDENTS EDIT HERE *** to send data to formatted text file
+        # replace string with your "lastname,firstname" below.
+        filename = "sanchez,andrew" + str(datetime.datetime.now()) + ".csv"
+        file = open(filename , "w")
+        file.write('RUN,GATE #, TIME(MILIS)\n' % self.exp_count) # write header
+        for row in range(len(data_buf)): # write data in buffer
+            file.write(data_buf[row] + '\n')
+        print("Sent to File:\t" + filename)
+        file.close()
+
 
     # define a shutdown process
     def shutdown(self):
