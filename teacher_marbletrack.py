@@ -15,11 +15,10 @@ class MarbleTrack():
     def __init__(self, pin_list, dist_list):
 
         # expected list count error
-        if((len(pin_list) is not num_pins) or (len(dist_list) is not num_pins)):
+        if((len(pin_list) is not self.num_pins) or (len(dist_list) is not self.num_pins)):
             print('Too few pins or distances were entered')
             print('Fix error and try again')
-            break
-
+        
         GPIO.setmode(GPIO.BCM)
         self.photo_gate_pins = pin_list  # photogate list
         self.photo_gate_distances = dist_list # distances in cm
@@ -28,17 +27,17 @@ class MarbleTrack():
         print('Marble Track Prepping ...')
 
         # setup all photo gates
-        for gate in photo_gate_pins:
+        for gate in pin_list:
             GPIO.setup(gate, GPIO.IN)
 
         print('Attaching edge listeners to PHOTOGATES ...')
         # attach seperate events
-        GPIO.add_event_detect(photo_gate_pins[0], GPIO.RISING, callback=self.gate1_event)
-        GPIO.add_event_detect(photo_gate_pins[1], GPIO.RISING, callback=self.gate2_event)
-        GPIO.add_event_detect(photo_gate_pins[2], GPIO.RISING, callback=self.gate3_event)
-        GPIO.add_event_detect(photo_gate_pins[3], GPIO.RISING, callback=self.gate4_event)
-        GPIO.add_event_detect(photo_gate_pins[4], GPIO.RISING, callback=self.gate5_event)
-        GPIO.add_event_detect(photo_gate_pins[5], GPIO.RISING, callback=self.gate6_event)
+        GPIO.add_event_detect(pin_list[0], GPIO.RISING, callback=self.gate1_event)
+        GPIO.add_event_detect(pin_list[1], GPIO.RISING, callback=self.gate2_event)
+        GPIO.add_event_detect(pin_list[2], GPIO.RISING, callback=self.gate3_event)
+        GPIO.add_event_detect(pin_list[3], GPIO.RISING, callback=self.gate4_event)
+        GPIO.add_event_detect(pin_list[4], GPIO.RISING, callback=self.gate5_event)
+        GPIO.add_event_detect(pin_list[5], GPIO.RISING, callback=self.gate6_event)
 
         print('Creating time buffers for each GATE ...')
         self.g1_time_buf = []
@@ -58,23 +57,23 @@ class MarbleTrack():
         self.g1_time_buf.append(time.time()) # record time
         print('PHOTOGATE # 1 Yeet !')
 
-    def gate1_event(self, channel):
+    def gate2_event(self, channel):
         self.g2_time_buf.append(time.time()) # record time
         print('PHOTOGATE # 2 Yeet !')
 
-    def gate1_event(self, channel):
+    def gate3_event(self, channel):
         self.g3_time_buf.append(time.time()) # record time
         print('PHOTOGATE # 3 Yeet !')
 
-    def gate1_event(self, channel):
+    def gate4_event(self, channel):
         self.g4_time_buf.append(time.time()) # record time
         print('PHOTOGATE # 4 Yeet !')
 
-    def gate1_event(self, channel):
+    def gate5_event(self, channel):
         self.g5_time_buf.append(time.time()) # record time
         print('PHOTOGATE # 5 Yeet !')
 
-    def gate1_event(self, channel):
+    def gate6_event(self, channel):
         self.g6_time_buf.append(time.time()) # record time
         print('PHOTOGATE # 6 Yeet !')
 
