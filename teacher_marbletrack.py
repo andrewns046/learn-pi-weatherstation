@@ -132,12 +132,11 @@ class MarbleTrack():
         # *** STUDENTS EDIT HERE *** to send data to formatted text file
         # replace string with your "lastname,firstname" below.
         
-        file = open(self.filename , "w")
-        file.write('RUN,GATE#,TIME(MILIS),DISTANCE(CM)\n') # write header
+        file = open(self.filename , "a")
+        file.write('\nRUN,GATE#,TIME(MILIS),DISTANCE(CM)\n') # write header
         for row in range(len(data_buf)): # write data in buffer
             file.write(data_buf[row] + '\n')
-        file.write('\n') # seperate data
-        print("Wrote to file:\t" + filename)
+        print("Wrote to file:\t" + self.filename)
         file.close()
 
 
