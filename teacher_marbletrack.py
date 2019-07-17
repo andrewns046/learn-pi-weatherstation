@@ -82,8 +82,8 @@ class MarbleTrack():
         row = ""
         for x in time_buf:
             elap_time = x - self.g1_time_buf[0]
-            row = str(self.exp_count) + "," + gate_num + ',' + str(int(round(elap_time*1000))) + ',' + str(photo_gate_distances[gate_num])
-            print(str(self.exp_count) + "\t" + gate_num + '\t' + str(int(round(elap_time*1000))) + '\t' + str(photo_gate_distances[gate_num]))
+            row = str(self.exp_count) + "," + str(gate_num) + ',' + str(int(round(elap_time*1000))) + ',' + str(photo_gate_distances[gate_num])
+            print(str(self.exp_count) + "\t" + str(gate_num) + '\t' + str(int(round(elap_time*1000))) + '\t' + str(photo_gate_distances[gate_num]))
         return row
 
     # experiment
