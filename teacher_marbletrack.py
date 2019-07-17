@@ -30,6 +30,14 @@ class MarbleTrack():
         for gate in pin_list:
             GPIO.setup(gate, GPIO.IN)
 
+        print('Creating time buffers for each GATE ...')
+        self.g1_time_buf = []
+        self.g2_time_buf = []
+        self.g3_time_buf = []
+        self.g4_time_buf = []
+        self.g5_time_buf = []
+        self.g6_time_buf = []
+
         print('Attaching edge listeners to PHOTOGATES ...')
         # attach seperate events
         GPIO.add_event_detect(pin_list[0], GPIO.RISING, callback=self.gate1_event)
@@ -38,14 +46,6 @@ class MarbleTrack():
         GPIO.add_event_detect(pin_list[3], GPIO.RISING, callback=self.gate4_event)
         GPIO.add_event_detect(pin_list[4], GPIO.RISING, callback=self.gate5_event)
         GPIO.add_event_detect(pin_list[5], GPIO.RISING, callback=self.gate6_event)
-
-        print('Creating time buffers for each GATE ...')
-        self.g1_time_buf = []
-        self.g2_time_buf = []
-        self.g3_time_buf = []
-        self.g4_time_buf = []
-        self.g5_time_buf = []
-        self.g6_time_buf = []
 
         print('Done !')
         print('Type exp.start_exp() to start gathering data :)')
@@ -82,8 +82,8 @@ class MarbleTrack():
         row = ""
         for x in time_buf:
             elap_time = x - self.g1_time_buf[0]
-            row = str(self.exp_count) + "," + gate_num + ',' + str(int(round(elap_time*1000)))
-            print(str(self.exp_count) + "\t" + gate_num + '\t' + str(int(round(elap_time*1000))))
+            row = str(self.exp_count) + "," + gate_num + ',' + str(int(round(elap_time*1000))) + ',' + str(photo_gate_distances[gate_num])
+            print(str(self.exp_count) + "\t" + gate_num + '\t' + str(int(round(elap_time*1000))) + '\t' + str(photo_gate_distances[gate_num]))
         return row
 
     # experiment
@@ -111,7 +111,7 @@ class MarbleTrack():
         print('##    RESULTS   ##')
         print('##################')
 
-        print('\n\n\nRUN\tGATE #\tTIME(MILIS)')
+        print('\n\n\nRUN\tGATE #\tTIME(MILIS)\tDISTANCE(CM)')
 
         # prep data
         data_buf = []
