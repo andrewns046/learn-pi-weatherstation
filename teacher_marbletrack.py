@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+import datetime
 
 class MarbleTrack():
     # constants
@@ -82,8 +83,8 @@ class MarbleTrack():
         row = ""
         for x in time_buf:
             elap_time = x - self.g1_time_buf[0]
-            row = str(self.exp_count) + "," + str(gate_num) + ',' + str(int(round(elap_time*1000))) + ',' + str(photo_gate_distances[gate_num])
-            print(str(self.exp_count) + "\t" + str(gate_num) + '\t' + str(int(round(elap_time*1000))) + '\t' + str(photo_gate_distances[gate_num]))
+            row = str(self.exp_count) + "," + str(gate_num) + ',' + str(int(round(elap_time*1000))) + ',' + str(self.photo_gate_distances[gate_num-1])
+            print(str(self.exp_count) + "\t" + str(gate_num) + '\t' + str(int(round(elap_time*1000))) + '\t' + str(self.photo_gate_distances[gate_num-1]))
         return row
 
     # experiment
@@ -131,7 +132,7 @@ class MarbleTrack():
         # replace string with your "lastname,firstname" below.
         filename = "sanchez,andrew" + str(datetime.datetime.now()) + ".csv"
         file = open(filename , "w")
-        file.write('RUN,GATE #, TIME(MILIS)\n' % self.exp_count) # write header
+        file.write('RUN,GATE #, TIME(MILIS)\n') # write header
         for row in range(len(data_buf)): # write data in buffer
             file.write(data_buf[row] + '\n')
         print("Sent to File:\t" + filename)
